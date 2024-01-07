@@ -12,11 +12,13 @@ import org.springframework.stereotype.Component;
 @Component("myBean")
 public class MySpringBean {
 
+    private int counter;
+
     @Value("${greeting}")
     private String say;
 
     public String saySomething() {
-        return say;
+        return String.format("%s I an invoked %d times", say, ++counter);
     }
 
 }

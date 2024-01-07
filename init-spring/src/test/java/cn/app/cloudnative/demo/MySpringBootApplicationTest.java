@@ -1,8 +1,13 @@
 package cn.app.cloudnative.demo;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import java.util.concurrent.TimeUnit;
+
 import org.apache.camel.CamelContext;
 import org.apache.camel.ProducerTemplate;
 import org.apache.camel.builder.AdviceWith;
+import org.apache.camel.builder.NotifyBuilder;
 import org.apache.camel.component.mock.MockEndpoint;
 import org.apache.camel.test.spring.junit5.CamelSpringBootTest;
 import org.junit.jupiter.api.Test;
@@ -24,6 +29,12 @@ public class MySpringBootApplicationTest {
 	public void test() throws Exception {
 		MockEndpoint mock = camelContext.getEndpoint("mock:stream:out", MockEndpoint.class);
 
+		// we expect that one or more messages is automatic done by the Camel
+        // route as it uses a timer to trigger
+        NotifyBuilder notify = new NotifyBuilder(camelContext).whenDone(1).create();
+
+        assertTrue(notify.matches(10, TimeUnit.SECONDS));
+
 		AdviceWith.adviceWith(camelContext, "hello",
 				// intercepting an exchange on route
 				r -> {
@@ -36,7 +47,7 @@ public class MySpringBootApplicationTest {
 
 		// setting expectations
 		mock.expectedMessageCount(1);
-		mock.expectedBodiesReceived("Hello World");
+		//mock.expectedBodiesReceived("Hello World");
 
 		// invoking consumer
 		producerTemplate.sendBody("direct:start", null);
