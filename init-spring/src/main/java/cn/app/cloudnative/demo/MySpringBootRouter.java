@@ -19,6 +19,8 @@ public class MySpringBootRouter extends RouteBuilder {
                 .to("log:foo")
             .end()
             .to("stream:out");
+        from("kamelet:chuck-norris-source")
+            .log("${body}");
     }
 
 }
