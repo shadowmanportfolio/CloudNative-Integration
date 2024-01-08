@@ -19,11 +19,11 @@ public class MySpringBootRouter extends RouteBuilder {
                 .to("log:foo")
             .end()
             .to("stream:out");
-        from("kamelet:chuck-norris-source")
+        from("kamelet:chuck-norris-source").routeId("chuck-norris")
             .log("${body}");
         // generate random number every second
         // which is send to this seda queue that the NumberPojo will consume
-        from("timer:number?period=1000")
+        from("timer:number?period=1000").routeId("randomNumbers")
             .transform().simple("${random(0,200)}")
             .to("direct:numbers");
     }
